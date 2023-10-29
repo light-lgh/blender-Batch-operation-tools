@@ -11,7 +11,7 @@ bl_info = {
     "description": "批量上材质",
     "version": (1, 0)
 }
-
+# 指定路径
 desktop_path = os.path.expanduser("~/Desktop")
 target_dir = os.path.join(desktop_path, "tex")
 
@@ -42,7 +42,7 @@ class MaterialManager:
     def setup_material_for_image(self, mat, file_name, file_extension):
         for node in mat.node_tree.nodes:
             mat.node_tree.nodes.remove(node)
-
+        # 连接节点
         texImage = mat.node_tree.nodes.new(type='ShaderNodeTexImage')
         texImage.image = bpy.data.images.load(
             os.path.join(self.target_dir, file_name + file_extension))
@@ -60,16 +60,11 @@ class MaterialManager:
 
         for obj in bpy.data.objects:
             if obj.type == 'MESH' and obj.name == file_name:
-                # 清空材质槽
+                # 清空材质
                 obj.data.materials.clear()
-
                 # 添加新材质
                 obj.data.materials.append(mat)
 
-                if not obj.material_slots:
-                    # 如果材质槽不存在，添加一个新的材质槽
-                    material_slot = obj.material_slots.add()
-                    material_slot.material = mat
                 if file_extension == ".png":
                     materialAlphaMix = obj.material_slots[0].material
                     materialAlphaMix.blend_method = 'HASHED'
@@ -95,7 +90,7 @@ class MaterialManager:
 
 class My_Panel(Panel):
     bl_label = '操作'
-    bl_idname = 'batchmat'
+    bl_idname = 'image to material'
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "批量材质"
@@ -109,7 +104,7 @@ class My_Panel(Panel):
 class My_Operator_1(Operator):
     bl_idname = "material_cr.operator"
     bl_label = "赋予材质"
-    bl_description = "批量上材质"
+    bl_description = "批量上材质,未正常执行时尝试清空材质"
 
     def execute(self, context):
         material_manager = MaterialManager(target_dir, texture_files)
