@@ -127,14 +127,14 @@ def register():
     bpy.utils.register_class(My_Panel)
     bpy.utils.register_class(My_Operator_1)
     bpy.utils.register_class(My_Operator_2)
-    bpy.utils.register_class(MaterialManager)
+
 
 
 def unregister():
     bpy.utils.unregister_class(My_Panel)
     bpy.utils.unregister_class(My_Operator_1)
     bpy.utils.unregister_class(My_Operator_2)
-    bpy.utils.unregister_class(MaterialManager)
+
 
 
 if __name__ == "__main__":
