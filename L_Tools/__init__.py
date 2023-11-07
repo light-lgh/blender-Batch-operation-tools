@@ -13,7 +13,7 @@ bl_info = {
 }
 # 指定路径
 desktop_path = os.path.expanduser("~/Desktop")
-target_dir = os.path.join(desktop_path, "tex")
+target_dir = os.path.join(desktop_path, "texture")
 
 # 获取文件名和扩展名
 texture_files = [(os.path.splitext(files)[0], os.path.splitext(files)[1])
