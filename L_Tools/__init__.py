@@ -9,7 +9,7 @@ bl_info = {
     "blender": (2, 81, 0),
     "location": "UI",
     "description": "批量上材质",
-    "version": (1, 0)
+    "version": (1, 2)
 }
 # 指定路径
 desktop_path = os.path.expanduser("~/Desktop")
@@ -20,7 +20,7 @@ texture_files = [(os.path.splitext(files)[0], os.path.splitext(files)[1])
                  for files in os.listdir(target_dir) if os.path.isfile(os.path.join(target_dir, files))]
 
 
-class MaterialManager:
+class MaterialManager():
     def __init__(self, target_dir, texture_files):
         self.target_dir = target_dir
         self.texture_files = texture_files
@@ -88,20 +88,21 @@ class MaterialManager:
             bpy.data.materials.remove(material)
 
 
-class My_Panel(Panel):
+class MyPanel(Panel):
     bl_label = '操作'
-    bl_idname = 'image to material'
+    bl_idname = "IMAGE2MAT_PT_panel"
+
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_category = "批量材质"
 
     def draw(self, context):
         layout = self.layout
-        layout.operator(My_Operator_1.bl_idname)
-        layout.operator(My_Operator_2.bl_idname)
+        layout.operator(MyOperatorCr.bl_idname)
+        layout.operator(MyOperatorCl.bl_idname)
 
 
-class My_Operator_1(Operator):
+class MyOperatorCr(Operator):
     bl_idname = "material_cr.operator"
     bl_label = "赋予材质"
     bl_description = "批量上材质,未正常执行时尝试清空材质"
@@ -112,7 +113,7 @@ class My_Operator_1(Operator):
         return {"FINISHED"}
 
 
-class My_Operator_2(Operator):
+class MyOperatorCl(Operator):
     bl_idname = "material_cl.operator"
     bl_label = "清空材质"
     bl_description = "清空所有材质"
@@ -124,16 +125,16 @@ class My_Operator_2(Operator):
 
 
 def register():
-    bpy.utils.register_class(My_Panel)
-    bpy.utils.register_class(My_Operator_1)
-    bpy.utils.register_class(My_Operator_2)
+    bpy.utils.register_class(MyPanel)
+    bpy.utils.register_class(MyOperatorCr)
+    bpy.utils.register_class(MyOperatorCl)
 
 
 
 def unregister():
-    bpy.utils.unregister_class(My_Panel)
-    bpy.utils.unregister_class(My_Operator_1)
-    bpy.utils.unregister_class(My_Operator_2)
+    bpy.utils.unregister_class(MyPanel)
+    bpy.utils.unregister_class(MyOperatorCr)
+    bpy.utils.unregister_class(MyOperatorCl)
 
 
 
