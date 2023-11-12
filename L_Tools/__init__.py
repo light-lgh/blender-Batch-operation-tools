@@ -4,30 +4,34 @@ import os
 
 bl_info = {
     "name": "批量材质",
-    "category": "3D View",
+    "category": "LTools",
     "author": "Light",
-    "blender": (2, 81, 0),
+    "blender": (3, 6, 0),
     "location": "UI",
     "description": "批量上材质",
-    "version": (1, 2)
+    "version": (2, 0)
 }
-# 指定路径
-desktop_path = os.path.expanduser("~/Desktop")
-target_dir = os.path.join(desktop_path, "texture")
 
-# 获取文件名和扩展名
-texture_files = [(os.path.splitext(files)[0], os.path.splitext(files)[1])
-                 for files in os.listdir(target_dir) if os.path.isfile(os.path.join(target_dir, files))]
+
+class prop_mat(bpy.types.PropertyGroup):
+    texture_path : bpy.props.StringProperty(default="C:\\",subtype="DIR_PATH")
+
+
 
 
 class MaterialManager():
-    def __init__(self, target_dir, texture_files):
-        self.target_dir = target_dir
-        self.texture_files = texture_files
+    
+    
+    
+    def __init__(self, target_dir):
+        self.target_dir = bpy.context.scene.matprop.texture_path
+
 
     def create_materials(self):
-
+        texture_files = [(os.path.splitext(files)[0], os.path.splitext(files)[1])
+                 for files in os.listdir(self.target_dir) if os.path.isfile(os.path.join(self.target_dir, files))]
         for file_name, file_extension in texture_files:
+            print("图像：{} 已创建材质".format(file_name))
             mat = bpy.data.materials.new(name=file_name)
             mat.use_nodes = True
 
@@ -98,9 +102,13 @@ class MyPanel(Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator(MyOperatorCr.bl_idname)
-        layout.operator(MyOperatorCl.bl_idname)
-
+        row = layout.row(align=True)
+        row.label(text="贴图路径:")
+        row.prop(bpy.context.scene.matprop, "texture_path",text="")
+        row = layout.row(align=True)
+        row.operator(MyOperatorCr.bl_idname,icon='MATERIAL_DATA')
+        row.operator(MyOperatorCl.bl_idname,icon='CANCEL')
+        
 
 class MyOperatorCr(Operator):
     bl_idname = "material_cr.operator"
@@ -108,7 +116,7 @@ class MyOperatorCr(Operator):
     bl_description = "批量上材质,未正常执行时尝试清空材质"
 
     def execute(self, context):
-        material_manager = MaterialManager(target_dir, texture_files)
+        material_manager = MaterialManager(bpy.context.scene.matprop.texture_path)
         material_manager.create_materials()
         return {"FINISHED"}
 
@@ -117,9 +125,11 @@ class MyOperatorCl(Operator):
     bl_idname = "material_cl.operator"
     bl_label = "清空材质"
     bl_description = "清空所有材质"
+    
+    
 
     def execute(self, context):
-        material_manager = MaterialManager(target_dir, texture_files)
+        material_manager = MaterialManager(bpy.context.scene.matprop.texture_path)
         material_manager.clear_all_materials()
         return {'FINISHED'}
 
@@ -128,6 +138,8 @@ def register():
     bpy.utils.register_class(MyPanel)
     bpy.utils.register_class(MyOperatorCr)
     bpy.utils.register_class(MyOperatorCl)
+    bpy.utils.register_class(prop_mat)
+    bpy.types.Scene.matprop = bpy.props.PointerProperty(type=prop_mat)
 
 
 
@@ -135,7 +147,8 @@ def unregister():
     bpy.utils.unregister_class(MyPanel)
     bpy.utils.unregister_class(MyOperatorCr)
     bpy.utils.unregister_class(MyOperatorCl)
-
+    bpy.utils.unregister_class(prop_mat)
+    del bpy.types.Scene.matprop
 
 
 if __name__ == "__main__":
