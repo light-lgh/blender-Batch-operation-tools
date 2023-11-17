@@ -71,7 +71,7 @@ class MaterialManager():
 
                 if file_extension == ".png":
                     materialAlphaMix = obj.material_slots[0].material
-                    materialAlphaMix.blend_method = 'HASHED'
+                    materialAlphaMix.blend_method = 'BLEND'
                     materialAlphaMix.use_backface_culling = True
 
     def clear_all_materials(self):
