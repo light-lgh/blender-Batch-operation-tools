@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Panel
 from .bat_operator import MyOperatorCr, MyOperatorCl
-from .max_resolutionset import MaxResProp, MaxResSet
+from .max_resolutionset import MaxResSet
 
 
 class MyPanel(Panel):
@@ -23,4 +23,4 @@ class MyPanel(Panel):
         row.label(text="最大分辨率:")
         row.prop(context.scene.maxres, "max_resolution")
         row = layout.row(align=True)
-        row.operator("maxres_set.operator", icon='IMAGE_DATA')
+        row.operator(MaxResSet.bl_idname, icon='IMAGE_DATA')
