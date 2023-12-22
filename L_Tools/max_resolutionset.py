@@ -38,7 +38,9 @@ class MaxResSet(Operator):
         for img in bpy.data.images:
             if img.is_dirty:
                 img.save()
+        self.report({'INFO'}, "完成")
         return {'FINISHED'}
+
 
 
 class MaxResSetOnlySelect(Operator):
@@ -79,5 +81,5 @@ class MaxResSetOnlySelect(Operator):
                     # 保存修改后的图像
                     if active_image.is_dirty:
                         active_image.save()
-
+                        self.report({'INFO'}, f"已修改{active_image.name}")
         return {'FINISHED'}
