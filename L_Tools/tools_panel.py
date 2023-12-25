@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Panel
 from .bat_operator import MyOperatorCr, MyOperatorCl
-from .max_resolutionset import MaxResSet, MaxResSetOnlySelect
+from .max_resolutionset import MaxResSet, MaxResSetOnlySelect, ConvertToJPG
 
 
 class MyPanel(Panel):
@@ -15,7 +15,7 @@ class MyPanel(Panel):
         layout = self.layout
         row = layout.row(align=True)
         row.label(text="贴图路径:")
-        row.prop(bpy.context.scene.matprop, "texture_path", text="")
+        row.prop(context.scene.matprop, "texture_path", text="")
         row = layout.row(align=True)
         row.operator(MyOperatorCr.bl_idname, icon='MATERIAL_DATA')
         row.operator(MyOperatorCl.bl_idname, icon='CANCEL')
@@ -28,7 +28,7 @@ class MyPanel(Panel):
 
 class MyShaderPanel(Panel):
     bl_label = "操作"
-    bl_idname = "MaxRes_PT_Panel"
+    bl_idname = "MAXRES_PT_Panel"
     bl_space_type = 'NODE_EDITOR'
     bl_region_type = 'UI'
     bl_category = "批量工具"
@@ -40,3 +40,6 @@ class MyShaderPanel(Panel):
         row.prop(context.scene.maxres, "max_resolution")
         row = layout.row(align=True)
         row.operator(MaxResSetOnlySelect.bl_idname, icon='IMAGE_DATA')
+        row = layout.row(align=True)
+        row.prop(context.scene.maxres, "jpg_quality")
+        row.operator(ConvertToJPG.bl_idname, icon='IMAGE_DATA')

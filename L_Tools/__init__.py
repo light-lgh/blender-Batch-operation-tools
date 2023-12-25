@@ -1,8 +1,7 @@
 import bpy
 from .bat_operator import MyOperatorCr, MyOperatorCl, prop_mat
-from .max_resolutionset import MaxResProp, MaxResSet, MaxResSetOnlySelect
+from .max_resolutionset import MaxResProp, MaxResSet, MaxResSetOnlySelect, ConvertToJPG
 from .tools_panel import MyPanel, MyShaderPanel
-# from .shade_editor_panel import MyShaderPanel
 
 
 bl_info = {
@@ -25,6 +24,7 @@ def register():
     bpy.utils.register_class(MaxResSet)
     bpy.utils.register_class(MaxResSetOnlySelect)
     bpy.utils.register_class(MyShaderPanel)
+    bpy.utils.register_class(ConvertToJPG)
     bpy.types.Scene.matprop = bpy.props.PointerProperty(type=prop_mat)
     bpy.types.Scene.maxres = bpy.props.PointerProperty(type=MaxResProp)
 
@@ -38,6 +38,7 @@ def unregister():
     bpy.utils.unregister_class(MaxResSet)
     bpy.utils.unregister_class(MaxResSetOnlySelect)
     bpy.utils.unregister_class(MyShaderPanel)
+    bpy.utils.unregister_class(ConvertToJPG)
     del bpy.types.Scene.maxres
     del bpy.types.Scene.matprop
 
