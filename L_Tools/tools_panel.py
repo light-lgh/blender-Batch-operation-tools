@@ -1,7 +1,7 @@
 import bpy
 from bpy.types import Panel
-from .bat_operator import MyOperatorCr, MyOperatorCl
-from .max_resolutionset import MaxResSet, MaxResSetOnlySelect, ConvertToJPG
+from .bat_operator import MyOperatorCr, MyOperatorCl, MaterialInstanceSeparator
+from .max_resolutionset import MaxResSet, MaxResSetOnlySelect, ConvertToJPG, SelectedOnly_Set
 
 
 class MyPanel(Panel):
@@ -14,16 +14,19 @@ class MyPanel(Panel):
     def draw(self, context):
         layout = self.layout
         row = layout.row(align=True)
-        row.label(text="贴图路径:")
+        row.label(text="设置贴图路径:")
         row.prop(context.scene.matprop, "texture_path", text="")
         row = layout.row(align=True)
         row.operator(MyOperatorCr.bl_idname, icon='MATERIAL_DATA')
         row.operator(MyOperatorCl.bl_idname, icon='CANCEL')
         row = layout.row(align=True)
-        row.label(text="最大分辨率:")
+        row.label(text="调整分辨率:")
+        row = layout.row(align=True)
         row.prop(context.scene.maxres, "max_resolution")
         row = layout.row(align=True)
-        row.operator(MaxResSet.bl_idname, icon='IMAGE_DATA')
+        row.operator(SelectedOnly_Set.bl_idname, icon='IMAGE_DATA')
+        row = layout.row(align=True)
+        row.operator(MaterialInstanceSeparator.bl_idname, icon='DUPLICATE')
 
 
 class MyShaderPanel(Panel):
@@ -36,10 +39,14 @@ class MyShaderPanel(Panel):
     def draw(self, context):
         layout = self.layout
         row = layout.row(align=True)
-        row.label(text="最大分辨率:")
-        row.prop(context.scene.maxres, "max_resolution")
+        row.label(text="调整分辨率(仅限选定节点):")
         row = layout.row(align=True)
+        row.prop(context.scene.maxres, "max_resolution")
         row.operator(MaxResSetOnlySelect.bl_idname, icon='IMAGE_DATA')
+        row = layout.row(align=True)
+        row.operator(MaxResSet.bl_idname, icon='IMAGE_DATA')
+        row = layout.row(align=True)
+        row.label(text="另存为jpg:")
         row = layout.row(align=True)
         row.prop(context.scene.maxres, "jpg_quality")
         row.operator(ConvertToJPG.bl_idname, icon='IMAGE_DATA')

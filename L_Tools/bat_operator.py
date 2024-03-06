@@ -4,7 +4,7 @@ import os
 
 
 class prop_mat(bpy.types.PropertyGroup):
-    texture_path: bpy.props.StringProperty(default="C:\\", subtype="DIR_PATH")
+    texture_path: bpy.props.StringProperty(default="C:\\", subtype="DIR_PATH") # type: ignore
 
 
 class MaterialManager():
@@ -98,4 +98,37 @@ class MyOperatorCl(Operator):
         material_manager = MaterialManager(
             bpy.context.scene.matprop.texture_path)
         material_manager.clear_all_materials()
+        return {'FINISHED'}
+
+
+class MaterialInstanceSeparator(bpy.types.Operator):
+    bl_idname = "object.material_instance_separator"
+    bl_label = "快速切图"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        # 获取当前选择的物体
+        # selected_objects = bpy.context.selected_objects
+        i = 0
+        # 存储当前选中的对象
+        previously_selected_objects = [
+            obj for obj in bpy.context.selected_objects]
+        bpy.ops.object.select_all(action='DESELECT')
+
+        for obj in previously_selected_objects:
+            obj.select_set(True)
+            # 遍历物体的所有材质槽
+            for slot in obj.material_slots:
+                if slot.material and slot.material.users > 1:
+                    i += 1
+                    # 如果材质有多个用户（即它是实例化的），则创建一个副本
+                    new_material = slot.material.copy()
+                    new_material.name = slot.material.name + "_" +\
+                        str(i)
+                    slot.material = new_material
+            bpy.ops.object.lily_texture_packer()
+            obj.select_set(False)
+
+        bpy.ops.image.save_all_modified()
+
         return {'FINISHED'}
