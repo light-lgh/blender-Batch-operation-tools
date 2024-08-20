@@ -19,7 +19,7 @@ def get_image_scale_factor(image):
 
     original_width = image.size[0]
     original_height = image.size[1]
-    max_resolution = bpy.context.scene.maxres.max_resolution
+    max_resolution = bpy.context.scene.ltprop.max_resolution
 
     # 判断是否需要调整分辨率
     if original_width > max_resolution \
@@ -35,15 +35,8 @@ def get_image_scale_factor(image):
         return None
 
 
-class MaxResProp(bpy.types.PropertyGroup):
-    max_resolution: bpy.props.IntProperty(
-        default=1024, min=1, name="")  # type: ignore
-    jpg_quality: bpy.props.IntProperty(
-        name="图像质量", description="JPEG 图像保存质量", default=90, min=0, max=100)  # type: ignore
-
-
-class MaxResSet(Operator):
-    bl_idname = "maxres_set.operator"
+class resSet(Operator):
+    bl_idname = "lt.res_set"
     bl_label = "全局最大分辨率"
     bl_description = "调整所有图像的最大分辨率并输出到源文件"
 
@@ -71,8 +64,8 @@ class MaxResSet(Operator):
         return {'FINISHED'}
 
 
-class MaxResSetOnlySelect(Operator):
-    bl_idname = "maxres_set_onlyselect.operator"
+class resSetOnlySelect(Operator):
+    bl_idname = "lt.res_set_onlyselect"
     bl_label = "调整最大分辨率 (仅选定图像节点)"
     bl_description = "调整材质编辑器选定图像节点的最大分辨率并输出到源文件"
 
@@ -117,7 +110,7 @@ def are_nodes_overlapping(node1, node2, threshold=10):
 
 
 class ConvertToJPG(Operator):
-    bl_idname = "convert_func_onlyselect.operator"
+    bl_idname = "lt.convert_func_onlyselect"
     bl_label = "另存为jpg格式 (仅选定图像节点)"
     bl_description = "将选定图像节点的格式保存为jpg,打包的图像节点不可用,先解包"
 
@@ -156,7 +149,7 @@ class ConvertToJPG(Operator):
 
                         # 保存文件，设置质量
                         active_image.save(
-                            filepath=new_filepath, quality=bpy.context.scene.maxres.jpg_quality)
+                            filepath=new_filepath, quality=bpy.context.scene.ltprop.jpg_quality)
                         active_image.file_format = originalformat
                         # 更新节点树
                         active_tree = get_selected_nodes(context)[1]
@@ -216,7 +209,7 @@ class ConvertToJPG(Operator):
 
                         # 保存文件，设置质量
                         active_image.save(
-                            filepath=new_filepath, quality=bpy.context.scene.maxres.jpg_quality)
+                            filepath=new_filepath, quality=bpy.context.scene.ltprop.jpg_quality)
 
                         # 更新节点树
                         active_tree = get_selected_nodes(context)[1]
@@ -254,7 +247,7 @@ class ConvertToJPG(Operator):
 
 
 class SelectedOnly_Set(Operator):
-    bl_idname = "visable_set.operator"
+    bl_idname = "lt.visable_set"
     bl_label = "调整选中对象的贴图分辨率"
     bl_description = "调整选中对象的贴图分辨率"
 
