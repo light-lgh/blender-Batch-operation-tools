@@ -2,7 +2,7 @@ import bpy
 from bpy.types import Panel
 from .bat_operator import MyOperatorCr, MyOperatorCl, MaterialInstanceSeparator
 from .max_resolutionset import resSet, resSetOnlySelect, ConvertToJPG, SelectedOnly_Set
-from .mat_operator import AddNode, AdjustColor, ChangeRoughness, ChangeMetallic, ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode, RemoveMixNode
+from .mat_operator import ConverToBSDF, ConvertToBasicMaterial, AddNode, AdjustColor, ChangeRoughness, ChangeMetallic, ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode, RemoveMixNode
 
 
 class View3DPanel():
@@ -26,6 +26,9 @@ class MyPanel(View3DPanel, Panel):
         row = layout.row(align=True)
         row.operator(MyOperatorCr.bl_idname, icon='SEQ_PREVIEW')
         row.operator(MyOperatorCl.bl_idname, icon='CANCEL')
+        row = layout.row(align=True)
+        row.operator("image.save_all_modified",
+                     text="Save All Images", icon='FILE_TICK')
 
 
 class MyPanel_RES(View3DPanel, Panel):
@@ -52,6 +55,10 @@ class MyPanel_MAT(View3DPanel, Panel):
         layout = self.layout
 
         row = layout.row(align=True)
+        row.operator(ConvertToBasicMaterial.bl_idname,
+                     text="转为基础材质", icon='MATERIAL')
+        row.operator(ConverToBSDF.bl_idname,
+                     text="转为BSDF材质", icon='MATERIAL')
         row = layout.row(align=True)
         row.operator(AddNode.bl_idname, text="添加", icon='KEYTYPE_JITTER_VEC')
         row.operator(RemoveMixNode.bl_idname, text="移除",

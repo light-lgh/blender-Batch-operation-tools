@@ -37,7 +37,7 @@ def get_image_scale_factor(image):
 
 class resSet(Operator):
     bl_idname = "lt.res_set"
-    bl_label = "全局最大分辨率"
+    bl_label = "❗全局最大分辨率❗"
     bl_description = "调整所有图像的最大分辨率并输出到源文件"
 
     def execute(self, context):

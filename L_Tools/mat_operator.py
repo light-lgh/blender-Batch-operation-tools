@@ -82,7 +82,6 @@ class MatOp:
                 links.new(texture_node, base_color_input)  # 用保存的输入节点创建新链接
                 nodes.remove(mix_node)
 
-
     @staticmethod
     def adjust_mixnode_color(mat, sRGBa):
         nodes = mat.node_tree.nodes
@@ -120,7 +119,7 @@ class RemoveMixNode(bpy.types.Operator):
     bl_label = "移除混合颜色节点"
     bl_description = "移除混合颜色节点"
     bl_options = {'UNDO'}
-    
+
     def execute(self, context):
         for obj in bpy.context.selected_objects:
             if obj.type == 'MESH':
@@ -128,7 +127,8 @@ class RemoveMixNode(bpy.types.Operator):
                     if slot.material and slot.material.node_tree:
                         MatOp.remove_mix_color_node(slot.material)
 
-        return {'FINISHED'}    
+        return {'FINISHED'}
+
 
 class AdjustColor(bpy.types.Operator):
     bl_idname = "lt.adjust_color"
@@ -237,4 +237,137 @@ class ChangeBackfaceCulling(bpy.types.Operator):
                 for slot in obj.material_slots:
                     if slot.material:
                         slot.material.use_backface_culling = backface_culling
+        return {'FINISHED'}
+
+
+def create_basic_material_with_existing_image(mat):
+    # 检查材质是否启用了节点
+    if not mat.use_nodes:
+        mat.use_nodes = True
+
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+
+    # 查找现有的图像纹理节点
+    base_color_node = None
+    for node in nodes:
+        if node.type == "TEX_IMAGE":
+            base_color_node = node
+            break
+
+    if not base_color_node:
+        print(f"材质 {mat.name} 中没有图像纹理节点，跳过。")
+        return
+
+    # 清除除图像纹理节点外的所有节点
+    for node in list(nodes):
+        if node != base_color_node:
+            nodes.remove(node)
+
+    # 调整图像纹理节点位置
+    base_color_node.location = (-600, 0)
+
+    # 添加其他所需节点
+    color_factor_node = nodes.new(type="ShaderNodeMix")
+    color_factor_node.location = (-300, -200)
+    color_factor_node.label = "Color Factor"
+    color_factor_node.data_type = 'RGBA'
+    color_factor_node.blend_type = 'MULTIPLY'
+    color_factor_node.inputs[0].default_value = 1.0
+    color_factor_node.inputs[7].default_value = [1.0, 1.0, 1.0, 1.0]
+
+    light_path_node = nodes.new(type="ShaderNodeLightPath")
+    light_path_node.location = (-300, 200)
+
+    transparent_node = nodes.new(type="ShaderNodeBsdfTransparent")
+    transparent_node.location = (0, -200)
+
+    emission_node = nodes.new(type="ShaderNodeEmission")
+    emission_node.location = (0, -400)
+
+    mix_shader_node = nodes.new(type="ShaderNodeMixShader")
+    mix_shader_node.location = (200, 0)
+
+    output_node = nodes.new(type="ShaderNodeOutputMaterial")
+    output_node.location = (400, 0)
+
+    # 连接节点
+    links.new(base_color_node.outputs[0], color_factor_node.inputs[6])
+    links.new(color_factor_node.outputs[2], emission_node.inputs[0])
+    links.new(emission_node.outputs[0], mix_shader_node.inputs[2])
+    links.new(
+        light_path_node.outputs['Is Camera Ray'], mix_shader_node.inputs[0])
+    links.new(transparent_node.outputs[0], mix_shader_node.inputs[1])
+    links.new(mix_shader_node.outputs[0], output_node.inputs[0])
+
+
+class ConvertToBasicMaterial(bpy.types.Operator):
+    bl_idname = "lt.convert_to_basic_material"
+    bl_label = "转换为基础材质"
+    bl_description = "将选中的对象的材质转换为基础材质"
+    bl_options = {'UNDO'}
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            if obj.type == 'MESH':
+                for slot in obj.material_slots:
+                    mat = slot.material
+                    if mat:
+                        create_basic_material_with_existing_image(mat)
+        return {'FINISHED'}
+
+
+def bsdf_material(material):
+    # Get the material's node tree
+    nodes = material.node_tree.nodes
+    links = material.node_tree.links
+
+    # Find all image texture nodes
+    image_texture_nodes = [node for node in nodes if node.type == 'TEX_IMAGE']
+
+    if not image_texture_nodes:
+        return
+
+    # Clear all nodes except the image texture nodes
+    for node in nodes:
+        if node not in image_texture_nodes:
+            nodes.remove(node)
+
+    # Create a new Principled BSDF node
+    principled_bsdf = nodes.new(type='ShaderNodeBsdfPrincipled')
+    principled_bsdf.location = (0, 0)
+
+    # Get the material output node
+    output_node = None
+    for node in nodes:
+        if node.type == 'OUTPUT_MATERIAL':
+            output_node = node
+            break
+
+    if not output_node:
+        output_node = nodes.new(type='ShaderNodeOutputMaterial')
+        output_node.location = (400, 0)
+
+    # Link the image texture color to the base color of the Principled BSDF
+    for image_texture in image_texture_nodes:
+        links.new(image_texture.outputs['Color'],
+                  principled_bsdf.inputs['Base Color'])
+
+    # Link the Principled BSDF to the material output
+    links.new(principled_bsdf.outputs['BSDF'], output_node.inputs['Surface'])
+
+
+class ConverToBSDF(bpy.types.Operator):
+    bl_idname = "lt.convert_to_bsdf"
+    bl_label = "转换为BSDF"
+    bl_description = "转换为BSDF"
+    bl_options = {'UNDO'}
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            if obj.type == 'MESH':
+                for slot in obj.material_slots:
+                    material = slot.material
+                    if material and material.use_nodes:
+                        bsdf_material(material)
         return {'FINISHED'}

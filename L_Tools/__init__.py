@@ -4,7 +4,7 @@ from bpy.types import PropertyGroup
 from .bat_operator import MyOperatorCr, MyOperatorCl,  MaterialInstanceSeparator
 from .max_resolutionset import resSet, resSetOnlySelect, ConvertToJPG, SelectedOnly_Set
 from .tools_panel import MyPanel, MyShaderPanel, MyPanel_MAT, MyPanel_RES
-from .mat_operator import AddNode, AdjustColor, ChangeRoughness, ChangeMetallic,ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode,RemoveMixNode
+from .mat_operator import ConverToBSDF, ConvertToBasicMaterial, AddNode, AdjustColor, ChangeRoughness, ChangeMetallic, ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode, RemoveMixNode
 
 
 bl_info = {
@@ -60,7 +60,7 @@ class ltProperties(PropertyGroup):
 
 clss = [MyOperatorCr, MyOperatorCl,  MaterialInstanceSeparator, ltProperties, ChangeRoughness, ChangeMetallic,
         resSet, resSetOnlySelect, ConvertToJPG, SelectedOnly_Set, MyPanel, MyShaderPanel, MyPanel_MAT, MyPanel_RES,
-        AddNode, AdjustColor,ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode,RemoveMixNode]
+        ConverToBSDF, ConvertToBasicMaterial, AddNode, AdjustColor, ChangeEmission, ChangeBackfaceCulling, ChangeBlendeMode, RemoveMixNode]
 
 
 def register():
