@@ -77,17 +77,17 @@ class MyPanel_MAT(View3DPanel, Panel):
         row = layout.row(align=True)
         row.operator(ChangeEmission.bl_idname, text="", icon="PLAY")
 
-        row = layout.row(align=True)
-        box = row.box()
-        box.label(text="其他设置", icon='HANDLETYPE_AUTO_CLAMP_VEC')
-        box.prop(context.scene.ltprop, "lt_backface_culling",
-                 icon="SEQUENCE_COLOR_04")
-        box.prop(context.scene.ltprop, "lt_blend_mode")
+        # row = layout.row(align=True)
+        # box = row.box()
+        # box.label(text="其他设置", icon='HANDLETYPE_AUTO_CLAMP_VEC')
+        # box.prop(context.scene.ltprop, "lt_backface_culling",
+        #          icon="SEQUENCE_COLOR_04")
+        # box.prop(context.scene.ltprop, "lt_blend_mode")
 
-        box = row.box()
-        box.label(text="")
-        box.operator(ChangeBackfaceCulling.bl_idname, text="🐍setting🐍")
-        box.operator(ChangeBlendeMode.bl_idname, text="🐍setting🐍")
+        # box = row.box()
+        # box.label(text="")
+        # box.operator(ChangeBackfaceCulling.bl_idname, text="🐍setting🐍")
+        # box.operator(ChangeBlendeMode.bl_idname, text="🐍setting🐍")
 
 
 class MyShaderPanel(Panel):
